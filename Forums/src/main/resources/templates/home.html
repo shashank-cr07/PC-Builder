@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Forums</title>
+    <link rel="stylesheet" href="/homestyle.css"> <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
+            padding: 40px; /* Increased padding for better spacing */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh; /* Ensure full viewport height */
+        }
+
+        /* Header Styles */
+        header {
+            width: 100%;
+            max-width: 1200px; /* Adjusted max width */
+            margin-bottom: 30px; /* Increased margin */
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px; /* Adjusted padding */
+            background-color: #1a1a1a; /* Darker background for contrast */
+            border-radius: 10px; /* More rounded corners */
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.05); /* Subtle white shadow */
+        }
+        .create-forum button {
+            padding: 14px 28px; /* Slightly larger button */
+            background-color: #e53935; /* Red button */
+            color: #fff;
+            border: none;
+            border-radius: 6px; /* More rounded corners */
+            font-size: 18px; /* Slightly larger font */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .create-forum button:hover {
+            background-color: #c62828; /* Darker red on hover */
+            transform: scale(1.05);
+        }
+
+        /* Search Bar Styles */
+        .search-bar {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar input[type="text"] {
+            padding: 12px 15px;
+            border: 1px solid #333;
+            border-radius: 6px;
+            background-color: #222;
+            color: #fff;
+            font-size: 16px;
+            margin: 0 15px;
+            width: 250px; /* Adjust width as needed */
+            transition: border-color 0.3s ease;
+        }
+
+        .search-bar input[type="text"]:focus {
+            outline: none;
+            border-color: #e53935;
+        }
+
+        .search-bar button[type="submit"] {
+            padding: 12px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-bar button[type="submit"]:hover {
+            background-color: #555;
+        }
+
+        /* User Menu Styles */
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-icon {
+            width: 45px; /* Slightly larger icon */
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 2px solid #fff; /* White border */
+        }
+
+        .user-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 60px; /* Adjusted top position */
+            right: 0;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            width: 180px; /* Wider dropdown */
+            display: none;
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.08); /* Subtle white shadow */
+            z-index: 10; /* Ensure it's above other elements */
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-menu ul {
+            list-style: none;
+            padding: 15px;
+        }
+
+        .dropdown-menu li {
+            padding: 12px;
+            border-bottom: 1px solid #333; /* Darker border */
+        }
+
+        .dropdown-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-menu li a {
+            color: #eee; /* Slightly lighter text */
+            text-decoration: none;
+            display: block;
+            transition: color 0.2s ease;
+        }
+
+        .dropdown-menu li a:hover {
+            color: #e53935; /* Red on hover */
+        }
+
+        /* Content Area Styles */
+        .content {
+            width: 100%;
+            max-width: 800px; /* Wider content area */
+            margin-top: 40px; /* Adjusted margin */
+            padding: 30px;
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.05);
+            text-align: center; /* Center the initial text */
+        }
+
+        .home-message {
+            color: #ddd;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+
+        .content ul {
+            list-style: none;
+            text-align: left; /* Align forum list to the left */
+            padding: 0; /* Remove default ul padding */
+        }
+
+        .content ul li {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            transition: background-color 0.3s ease;
+        }
+
+        .content ul li:last-child {
+            border-bottom: none;
+        }
+
+        .content ul li a {
+            color: #e53935; /* Red links */
+            text-decoration: none;
+            font-size: 20px; /* Larger font for forum names */
+            display: block;
+            transition: color 0.2s ease;
+        }
+
+        .content ul li a:hover {
+            color: #fff; /* White on hover */
+            text-decoration: underline;
+            background-color: #333; /* Darker background on hover */
+            border-radius: 6px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            header {
+                margin-bottom: 20px;
+            }
+
+            .header-container {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 15px;
+            }
+
+            .create-forum {
+                width: 100%;
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+
+            .create-forum button {
+                width: 100%;
+            }
+
+            .search-bar {
+                width: 100%;
+                margin: 10px 0;
+            }
+
+            .search-bar input[type="text"] {
+                width: calc(100% - 80px); /* Adjust width for button */
+                margin: 0 10px 0 0;
+            }
+
+            .user-menu {
+                align-self: flex-end;
+            }
+
+            .content {
+                margin-top: 20px;
+                padding: 20px;
+            }
+
+            .content ul li a {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="create-forum">
+                <button onclick="window.location.href='/create-forum'">Create a Forum</button>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Search forums...">
+                <button type="submit">Search</button>
+            </div>
+
+            <div class="user-menu" id="userMenu">
+                <img src="/images/user-icon.jpg" alt="User" class="user-icon" onclick="toggleMenu()">
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <ul>
+                        <li><a href="/my-forums">My Forums</a></li>
+                        <li><a href="/my-posts">My Posts</a></li>
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="home-message">
+            <h1>Forums</h1>
+        </div>
+        <ul>
+            <li th:each="forum : ${forums}">
+                <a th:href="@{/forum/{id}(id=${forum.id})}" th:text="${forum.name}"></a>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('dropdownMenu').classList.toggle('show');
+        }
+
+        // Close dropdown if clicked outside
+        window.addEventListener('click', function (e) {
+            if (!document.getElementById('userMenu').contains(e.target)) {
+                document.getElementById('dropdownMenu').classList.remove('show');
+            }
+        });
+
+        // Basic client-side search (for demonstration purposes)
+        const searchInput = document.querySelector('.search-bar input[type="text"]');
+        const forumList = document.querySelector('.content ul');
+        const forumItems = forumList.querySelectorAll('li');
+
+        document.querySelector('.search-bar button[type="submit"]').addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            forumItems.forEach(item => {
+                const forumName = item.querySelector('a').textContent.toLowerCase();
+                if (forumName.includes(searchTerm)) {
+                    item.style.display = ''; // Show the item
+                } else {
+                    item.style.display = 'none'; // Hide the item
+                }
+            });
+        }
+    </script>
+</body>
+</html>

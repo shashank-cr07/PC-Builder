@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Post</title>
+    <link rel="stylesheet" href="/create-post.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header-container">
+        <h2>Create a New Post in <span th:text="${forum.name}"></span></h2>
+        <div class="create-forum">
+            <a th:href="@{'/forum/' + ${forum.id}}">
+                <button>← Back to Forum</button>
+            </a>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+        <form th:action="@{/create-post}" method="post" class="post-form">
+            <input type="hidden" name="forumId" th:value="${forum.id}" />
+
+            <textarea name="content" placeholder="What's on your mind?" maxlength="300" required></textarea>
+
+            <button type="submit">Post</button>
+        </form>
+    </div>
+
+</body>
+</html>
