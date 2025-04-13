@@ -46,7 +46,7 @@
             </div>
 
             <!-- Comment input form -->
-            <form th:action="@{/add-comment}" method="post" style="margin-left: 2em; margin-top: 0.5em;">
+            <form th:action="@{/add-comment}" method="post" style="margin-left: 2em; margin-top: 0.5em;"class="comment-form">
                 <input type="hidden" name="postId" th:value="${postData.post.id}"/>
                 <input type="hidden" name="forumId" th:value="${forum.id}"/>
                 <input type="text" name="content" placeholder="Type your comment here" maxlength="100" required style="width: 300px;"/>
