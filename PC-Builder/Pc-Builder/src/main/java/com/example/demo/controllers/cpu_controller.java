@@ -22,6 +22,10 @@ public class cpu_controller {
     public List<cpu> getAllCPUs() {
         return cpuRepo.findAll();
     }
+        @GetMapping("/name-search")
+    public List<cpu> findNameCpu(@RequestParam String name) {
+        return cpuRepo.findByNameContainingIgnoreCase(name);
+    }
 
     @GetMapping("/{id}")
     public cpu getCPUById(@PathVariable("id") Integer id) {

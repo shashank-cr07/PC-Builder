@@ -8,4 +8,16 @@ public class main_controller{
     public String showHomePage() {
         return "Home"; 
     }
+    @GetMapping("/cpu-page")
+    public String showCpuPage() {
+        return "Cpu"; 
+    }
+    @GetMapping("/gpu-page")
+    public String showGpuPage() {
+        return "Gpu"; 
+    }
+    @GetMapping("/motherboard-page")
+    public String showMotherboardPage() {
+        return "Motherboard"; 
+    }
 }
