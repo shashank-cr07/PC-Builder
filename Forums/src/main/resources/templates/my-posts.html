@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Posts</title>
+    <link rel="stylesheet" type="text/css" href="my-posts.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header-container">
+        <div class="create-forum">
+            <a href="/home"><button>Back</button></a>
+        </div>
+        <div class="user-menu">
+            <img src="/images/user-icon.jpg" alt="User" class="user-icon" onclick="toggleDropdown()">
+            <div class="dropdown-menu" id="dropdown">
+                <ul>
+                    <li><a th:href="@{'/my-forums'}">My Forums</a></li>
+                    <li><a th:href="@{'/my-posts'}">My Posts</a></li>
+                    <li><a th:href="@{'/logout'}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <h2>My Posts</h2>
+
+        <!-- Loop through the post data -->
+        <ul>
+            <li th:each="postData : ${postsData}">
+                <div style="margin-bottom: 25px; text-align: left;">
+                    <!-- Display post content and its forum -->
+                    <p><strong>Forum:</strong> <span th:text="${postData.forum.name}"></span></p>
+                    <p><strong>Post:</strong> <span th:text="${postData.content}"></span></p>
+                    <!-- Display the username of the post creator -->
+                    <div style="margin-left: 20px; margin-top: 10px;">
+                        <p><strong>Comments:</strong></p>
+                        <!-- Loop through the comments associated with the post -->
+                        <ul>
+                            <li th:each="commentData : ${commentsMap[postData.id]}">
+                                <span th:text="${commentData.comment.content}"></span>
+                                <small style="color: #aaa;" th:text="' - ' + ${commentData.username}"></small>
+                            </li>
+                            <!-- No comments message -->
+                            <li th:if="${commentsMap[postData.id].size() == 0}" style="color: #aaa;">No comments yet.</li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        // Function to toggle the dropdown menu
+        function toggleDropdown() {
+            const dropdown = document.getElementById("dropdown");
+            dropdown.classList.toggle("show");
+        }
+
+        // Close dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.user-icon')) {
+                const dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>

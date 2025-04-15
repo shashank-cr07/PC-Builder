@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${forum.name} + ' - Forum'">Forum</title>
+    <link rel="stylesheet" href="/forum-detail.css">
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <a th:href="@{/home}" class="btn">⬅ Back</a>
+    </div>
+
+    <div class="center-title" th:text="${forum.name}">Forum Name</div>
+
+    <div class="user-info">
+        <img src="/images/user-icon.jpg" alt="User Icon">
+        <span th:text="${username}">Username</span>
+        <div class="user-dropdown">
+            <a th:href="@{'/my-forums'}">My Forums</a>
+            <a th:href="@{'/my-posts'}">My Posts</a>
+            <a th:href="@{'/logout'}">Logout</a>
+        </div>
+    </div>
+</div>
+
+<div class="post-list" style="position: relative;">
+    <a th:href="@{'/create-post?forumId=' + ${forum.id}}" class="btn" style="position: absolute; top: 10px; right: 10px;">➕</a>
+
+    <ul>
+        <li th:if="${#lists.isEmpty(postsData)}">No posts yet in this forum.</li>
+        <li th:each="postData : ${postsData}" style="margin-bottom: 2em; list-style: none;">
+            <div>
+                <strong th:text="${postData.post.content}">Post content</strong>
+                <span style="color: gray;">(</span>
+                <span style="color: gray;" th:text="${postData.username}">username</span>
+                <span style="color: gray;">)</span>
+            </div>
+
+            <!-- Comments under post -->
+            <div th:each="commentData : ${commentsMap[postData.post.id]}" style="margin-left: 2em; margin-top: 0.3em;">
+                <span th:text="${commentData.comment.content}">Comment content</span>
+                <span style="color: gray;">(</span>
+                <span style="color: gray;" th:text="${commentData.username}">username</span>
+                <span style="color: gray;">)</span>
+            </div>
+
+            <!-- Comment input form -->
+            <form th:action="@{/add-comment}" method="post" style="margin-left: 2em; margin-top: 0.5em;"class="comment-form">
+                <input type="hidden" name="postId" th:value="${postData.post.id}"/>
+                <input type="hidden" name="forumId" th:value="${forum.id}"/>
+                <input type="text" name="content" placeholder="Type your comment here" maxlength="100" required style="width: 300px;"/>
+                <button type="submit">Submit</button>
+            </form>
+
+            <!-- Line after each post -->
+            <hr style="margin-top: 1em; border: 0; border-top: 1px solid #ddd;">
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>
