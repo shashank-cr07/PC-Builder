@@ -1,6 +1,7 @@
 # PC-Builder
 
 - install pymysql,csv,python-dotenv libraries
+- pip install cryptography also as MySQL connection needs this
 - enter your details in the .env file
 - run the 'csv_to_sql.py' file to obtain all tables on MySQL
 
