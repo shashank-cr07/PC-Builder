@@ -767,7 +767,7 @@
 
         // Back to Main Menu functionality
         document.getElementById('backToMainMenu').addEventListener('click', function() {
-            window.location.href = '/';
+            window.location.href = '/home-pc';
         });
 
         // Load all fans on page load

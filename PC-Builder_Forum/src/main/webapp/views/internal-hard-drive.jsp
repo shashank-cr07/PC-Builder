@@ -404,7 +404,7 @@
 
         // Back to Main Menu functionality
         document.getElementById('backToMainMenu').addEventListener('click', function() {
-            window.location.href = '/';
+            window.location.href = '/home-pc';
         });
 
         // Load saved selection from localStorage

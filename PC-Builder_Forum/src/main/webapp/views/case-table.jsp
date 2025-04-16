@@ -345,7 +345,7 @@
 <body>
 
     <!-- Back to Main Menu Button -->
-    <button id="backToMainMenu">← Back to Main Menu</button>
+    <button id="backToMainMenu">Back to Main Menu</button>
 
     <div class="heading-container">
         <h2 class="CaseHeading">Case Information</h2>
@@ -425,7 +425,7 @@
 
         // Back to Main Menu functionality
         document.getElementById('backToMainMenu').addEventListener('click', function() {
-            window.location.href = '/';
+            window.location.href = '/home-pc';
         });
 
         // Load saved selection from localStorage
