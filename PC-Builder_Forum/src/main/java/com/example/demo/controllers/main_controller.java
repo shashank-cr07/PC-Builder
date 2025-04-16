@@ -14,7 +14,7 @@ public class main_controller{
     }
     @GetMapping("/cpu-page")
     public String showCpuPage() {
-        return "create-post"; 
+        return "Cpu"; 
     }
     @GetMapping("/gpu-page")
     public String showGpuPage() {
