@@ -6,8 +6,18 @@
     <title>${forum.name} - Forum</title>
     <link rel="stylesheet" href="/forum-detail.css">
 </head>
-<body>
 
+<body>
+<script>
+    function toggleMenu() {
+            document.getElementById('user-dropdown').classList.toggle('show');
+        }
+        window.addEventListener('click', function (e) {
+            if (!document.getElementById('user-info').contains(e.target)) {
+                document.getElementById('user-dropdown').classList.remove('show');
+            }
+        });
+</script>
 <div class="header">
     <div>
         <a href="/home" class="btn">⬅ Back</a>
@@ -16,12 +26,16 @@
     <div class="center-title">${forum.name}</div>
 
     <div class="user-info">
-        <img src="/images/user-icon.jpg" alt="User Icon">
-        <span>${username}</span>
+        <img src="/images/user-icon.jpg" alt="User Icon" onclick="toggleMenu()">
+        <span style="margin-left: 0.5rem;" onclick="toggleMenu()">${username}</span>
         <div class="user-dropdown">
-            <a href="/my-forums">My Forums</a>
-            <a href="/my-posts">My Posts</a>
-            <a href="/logout">Logout</a>
+            <ul>
+                <li><a href="/my-forums">My Forums</a></li>
+                <li><a href="/my-posts">My Posts</a></li>
+                <li><a href="/home-pc">Build PC</a></li>
+                <li><a href="/builds">View Builds</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
         </div>
     </div>
 </div>

@@ -17,6 +17,13 @@ public class Pc {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User User;
+
+    @JoinColumn(name = "name")
+    private String name;
+
     @OneToOne
     @JoinColumn(name = "cpu_id")
     private cpu cpu;
@@ -73,6 +80,7 @@ public class Pc {
     // Builder inner class (manual)
     public static class Builder {
         private Integer id;
+        private String name;
         private cpu cpu;
         private motherboard motherboard;
         private memory memory;
@@ -87,6 +95,7 @@ public class Pc {
         private case_fan caseFan;
         private thermal_paste thermalPaste;
         private os os;
+        private User User;
 
         public Builder cpu(cpu cpu) {
             this.cpu = cpu;
@@ -152,9 +161,13 @@ public class Pc {
             this.os = os;
             return this;
         }
+        public Builder User(User User) {
+            this.User = User;
+            return this;
+        }
 
         public Pc build() {
-            return new Pc(id, cpu, motherboard, memory, videoCard, powerSupply, caseTable,
+            return new Pc(id,User,name, cpu, motherboard, memory, videoCard, powerSupply, caseTable,
                     cpuCooler, internalHardDrive, externalHardDrive, fanController,
                     caseFan, thermalPaste, os);
         }

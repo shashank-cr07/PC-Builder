@@ -16,10 +16,13 @@
         </div>
         <div class="user-menu">
             <img src="/images/user-icon.jpg" alt="User" class="user-icon" onclick="toggleDropdown()">
+            <span style="margin-left: 0.5rem;" onclick = "toggleDropdown()">${username}</span>
             <div class="dropdown-menu" id="dropdown">
                 <ul>
                     <li><a href="/my-forums">My Forums</a></li>
                     <li><a href="/my-posts">My Posts</a></li>
+                    <li><a href="/home-pc">Build PC</a></li>
+                    <li><a href="/builds">View Builds</a></li>
                     <li><a href="/logout">Logout</a></li>
                 </ul>
             </div>

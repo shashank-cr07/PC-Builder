@@ -206,10 +206,14 @@
         <div class="header-center">Your Forums</div>
         <div class="user-menu" id="userMenu">
             <img src="/images/user-icon.jpg" alt="User" class="user-icon" onclick="toggleMenu()">
+            <span style="margin-left: 0.5rem;" onclick = "toggleMenu()">${username}</span>
+
             <div class="dropdown-menu" id="dropdownMenu">
                 <ul>
                     <li><a href="/my-forums">My Forums</a></li>
                     <li><a href="/my-posts">My Posts</a></li>
+                    <li><a href="/home-pc">Build PC</a></li>
+                    <li><a href="/builds">View Builds</a></li>
                     <li><a href="/logout">Logout</a></li>
                 </ul>
             </div>

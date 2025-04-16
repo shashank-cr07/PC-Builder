@@ -53,12 +53,12 @@ public class UserController {
             @RequestParam String password,
             Model model) {
 
-        User existing = userRepository.findByUsername(username);
+        User existing = userRepository.findByUsername(username).get();
 
         if (existing != null && existing.getPassword().equals(password)) {
             model.addAttribute("loggedInUser", existing); // store in session
             System.out.println(">>> Logging in: " + existing.getUsername() + ", ID: " + existing.getId());
-            return "redirect:/home";
+            return "redirect:/";
         } else {
             model.addAttribute("error", "Invalid credentials!");
             return "login";
@@ -80,6 +80,6 @@ public class UserController {
     @GetMapping("/logout")
     public String logout(SessionStatus status) {
         status.setComplete(); // Clear session attributes managed by @SessionAttributes
-        return "redirect:/login";
+        return "redirect:/";
     }
 }
