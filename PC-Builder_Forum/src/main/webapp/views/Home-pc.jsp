@@ -11,11 +11,8 @@
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
             background-color: #1d1d1d;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
             padding: 2rem;
-            gap: 2rem;
+            padding-top: 8rem; /* Prevent content from hiding behind header */
         }
 
         header {
@@ -40,8 +37,11 @@
             margin: 0;
         }
 
-        body {
-            padding-top: 8rem; /* Prevent content from hiding behind header */
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
         }
 
         .card {
@@ -81,7 +81,7 @@
             font-size: 0.9rem;
         }
         
-.user-dropdown {
+        .user-dropdown {
             position: fixed;
             top: 10px;
             right: 10px;
@@ -149,8 +149,30 @@
             display: block;
         }
 
+        /* Checkout Button Styles */
+        .checkout-button {
+            display: block;
+            margin: 1.5rem auto;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(90deg, #00ffe7, #ff00c8);
+            color: #fff;
+            font-size: 0.9rem;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            text-decoration: none;
+            text-align: center;
+            width: 120px;
+        }
 
-
+        .checkout-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
     </style>
 </head>
 <script>
@@ -191,80 +213,80 @@
     });
 </script>
 
-
 <body>
     <header>
         <h1 class="page-title">Build Your Own PC</h1>
     </header>
 
-    <!-- Cards Below -->
+    <!-- Cards Container -->
+    <div class="cards-container">
+        <a href="/cpupage" class="card">
+            <img src="views/images/cpu.webp" alt="CPU">
+            <h2 id="cpu-title">CPU</h2>
+        </a>
 
-    <a href="/cpupage" class="card">
-        <img src="views/images/cpu.webp" alt="CPU">
-        <h2 id = "cpu-title">CPU</h2>
-    </a>
+        <a href="/video-cardpage" class="card">
+            <img src="views/images/gpu.JPG" alt="GPU">
+            <h2 id="gpu-title">Video Card</h2>
+        </a>
 
-    <a href="/video-cardpage" class="card">
-        <img src="views/images/gpu.JPG" alt="GPU">
-        <h2 id="gpu-title">Video Card</h2>
-    </a>
+        <a href="/motherboardpage" class="card">
+            <img src="views/images/motherboard.webp" alt="Motherboard">
+            <h2 id="motherboard-title">Motherboard</h2>
+        </a>
 
-    <a href="/motherboardpage" class="card">
-        <img src="views/images/motherboard.webp" alt="Motherboard">
-        <h2 id="motherboard-title">Motherboard</h2>
-    </a>
+        <a href="/power-supplypage" class="card">
+            <img src="views/images/power-supply.webp" alt="Power Supply">
+            <h2 id="psu-title">Power Supply</h2>
+        </a>
 
-    <a href="/power-supplypage" class="card">
-        <img src="views/images/power-supply.webp" alt="Power Supply">
-        <h2 id="psu-title">Power Supply</h2>
-    </a>
+        <a href="/cpu-coolerpage" class="card">
+            <img src="views/images/cooler.jpg" alt="CPU Cooler">
+            <h2 id="cooler-title">CPU Cooler</h2>
+        </a>
 
-    <a href="/cpu-coolerpage" class="card">
-        <img src="views/images/cooler.jpg" alt="CPU Cooler">
-        <h2 id="cooler-title">CPU Cooler</h2>
-    </a>
+        <a href="/case-tablepage" class="card">
+            <img src="views/images/cpu-case.jpg" alt="CPU-Case">
+            <h2 id="case-title">CPU Case</h2>
+        </a>
 
-    <a href="/case-tablepage" class="card">
-        <img src="views/images/cpu-case.jpg" alt="CPU-Case">
-        <h2 id="case-title">CPU Case</h2>
-    </a>
+        <a href="/case-fanpage" class="card">
+            <img src="views/images/cpu-fan.webp" alt="CPU-Fan">
+            <h2 id="fan-title">Case Fan</h2>
+        </a>
 
-    <a href="/case-fanpage" class="card">
-        <img src="views/images/cpu-fan.webp" alt="CPU-Fan">
-        <h2 id="fan-title">Case Fan</h2>
-    </a>
+        <a href="/memorypage" class="card">
+            <img src="views/images/memory.jpeg" alt="Memory">
+            <h2 id="memory-title">Memory</h2>
+        </a>
 
-    <a href="/memorypage" class="card">
-        <img src="views/images/memory.jpeg" alt="Memory">
-        <h2 id="memory-title">Memory</h2>
-    </a>
+        <a href="/ospage" class="card">
+            <img src="views/images/os.jpeg" alt="OS">
+            <h2 id="os-title">Operating System</h2>
+        </a>
 
-    <a href="/ospage" class="card">
-        <img src="views/images/os.jpeg" alt="OS">
-        <h2 id="os-title">Operating System</h2>
-    </a>
+        <a href="/thermal-pastepage" class="card">
+            <img src="views/images/thermel paste.jpeg" alt="Thermal Paste">
+            <h2 id="tp-title">Thermal Paste</h2>
+        </a>
 
-    <a href="/thermal-pastepage" class="card">
-        <img src="views/images/thermel paste.jpeg" alt="Thermal Paste">
-        <h2 id="tp-title">Thermal Paste</h2>
-    </a>
+        <a href="/internal-hard-drivepage" class="card">
+            <img src="views/images/ihd.jpeg" alt="Internal Hard Drive">
+            <h2 id="ihd-title">Internal Hard Drive</h2>
+        </a>
 
-    <a href="/internal-hard-drivepage" class="card">
-        <img src="views/images/ihd.jpeg" alt="Internal Hard Drive">
-        <h2 id="ihd-title">Internal Hard Drive</h2>
-    </a>
+        <a href="/external-hard-drivepage" class="card">
+            <img src="views/images/ehd.jpeg" alt="External Hard Drive">
+            <h2 id="ehd-title">External Hard Drive</h2>
+        </a>
 
-    <a href="/external-hard-drivepage" class="card">
-        <img src="views/images/ehd.jpeg" alt="External Hard Drive">
-        <h2 id="ehd-title">External Hard Drive</h2>
-    </a>
+        <a href="/fan-controllerpage" class="card">
+            <img src="views/images/fan-controller.jpeg" alt="Fan Controller">
+            <h2 id="fanctrl-title">Fan Controller</h2>
+        </a>
+    </div>
 
-    <a href="/fan-controllerpage" class="card">
-        <img src="views/images/fan-controller.jpeg" alt="Fan Controller">
-        <h2 id="fanctrl-title">Fan Controller</h2>
-    </a>
-    
-<!-- User Dropdown -->
+    <!-- User Dropdown -->
     <div class="user-dropdown" onclick="handleUserClick()">
         <img src="/images/user-icon.jpg" alt="User Icon" class="user-icon">
         <div>
@@ -287,8 +309,11 @@
         </ul>
     </div>
 
+    <!-- Checkout Button -->
+    <a href="/checkout" class="checkout-button">Checkout</a>
+    <a href="/budget-planner" class="checkout-button">Reccomed PC</a>
+
 <script>
-    
     function handleUserClick() {
         const isLoggedIn = '<c:out value="${not empty loggedInUser}"/>' === 'true';
         if (isLoggedIn) {

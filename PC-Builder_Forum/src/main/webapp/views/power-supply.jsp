@@ -436,6 +436,50 @@
         const pageSize = 15;
         let currentSelectedPsu = null;
         let selectedPsu = null;
+        let currentPcId = localStorage.getItem('pcId');
+
+
+
+
+
+async function updatePartOnServer(partType, partId) {
+        try {
+            const url = currentPcId
+                ? `/api/score/add-part?pcId=`+currentPcId
+                : `/api/score/add-part`;
+            console.log(url);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    partType: partType,
+                    partId: partId
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.pcId) {
+                console.log(result.pcId);
+                currentPcId = result.pcId;
+                localStorage.setItem('pcId', currentPcId);
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Error updating part:', error);
+            showNotification('Failed to sync with server');
+            return { success: false, message: 'Network error' };
+        }
+    }
+
+
 
         // Back to Main Menu functionality
         document.getElementById('backToMainMenu').addEventListener('click', function() {
@@ -464,7 +508,7 @@
         }
 
         // Save selection to localStorage
-        function saveSelectedPsu() {
+        async function saveSelectedPsu() {
             if (selectedPsu) {
                 localStorage.setItem('selectedPsu', JSON.stringify({
                     id: selectedPsu.id,
@@ -475,6 +519,8 @@
                     modular: selectedPsu.modular,
                     // Include other minimal necessary properties
                 }));
+                await updatePartOnServer('power_supply', selectedPsu.id);
+
             } else {
                 localStorage.removeItem('selectedPsu');
             }
@@ -613,7 +659,7 @@
         }
 
         // Remove the selected PSU
-        function removeSelectedPsu() {
+        async function removeSelectedPsu() {
             if (!selectedPsu) return;
             
             const psuName = selectedPsu.name;
@@ -633,7 +679,8 @@
             
             // Clear from localStorage
             saveSelectedPsu();
-            
+            await updatePartOnServer('power_supply', null);
+
             // Show notification
             showNotification(`${psuName} removed from your build!`);
         }

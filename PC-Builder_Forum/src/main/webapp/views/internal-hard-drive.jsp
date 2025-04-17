@@ -379,7 +379,7 @@
     <!-- IHD Details Modal -->
     <div id="overlay"></div>
     <div id="ihdDetails">
-        <button id="closeDetails">×</button>
+        <button id="closeDetails">x</button>
         <h3 id="detailsName"></h3>
         <p><strong>ID:</strong> <span id="detailsId"></span></p>
         <p><strong>Price:</strong> <span id="detailsPrice"></span></p>
@@ -401,6 +401,48 @@
         const pageSize = 15;
         let currentSelectedIhd = null;
         let selectedIhd = null;
+
+        let currentPcId = localStorage.getItem('pcId');
+
+
+async function updatePartOnServer(partType, partId) {
+        try {
+            const url = currentPcId
+                ? `/api/score/add-part?pcId=`+currentPcId
+                : `/api/score/add-part`;
+            console.log(url);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    partType: partType,
+                    partId: partId
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.pcId) {
+                console.log(result.pcId);
+                currentPcId = result.pcId;
+                localStorage.setItem('pcId', currentPcId);
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Error updating part:', error);
+            showNotification('Failed to sync with server');
+            return { success: false, message: 'Network error' };
+        }
+    }
+
+
 
         // Back to Main Menu functionality
         document.getElementById('backToMainMenu').addEventListener('click', function() {
@@ -429,7 +471,7 @@
         }
 
         // Save selection to localStorage
-        function saveSelectedIhd() {
+        async function saveSelectedIhd() {
             if (selectedIhd) {
                 localStorage.setItem('selectedIhd', JSON.stringify({
                     id: selectedIhd.id,
@@ -437,6 +479,8 @@
                     price: selectedIhd.price,
                     capacity: selectedIhd.capacity
                 }));
+                await updatePartOnServer('internal_hard_drive', selectedIhd.id);
+
             } else {
                 localStorage.removeItem('selectedIhd');
             }
@@ -606,7 +650,7 @@
         }
 
         // Remove the selected IHD
-        function removeSelectedIhd() {
+        async function removeSelectedIhd() {
             if (!selectedIhd) return;
 
             const ihdName = selectedIhd.name;
@@ -626,6 +670,7 @@
 
             // Clear from localStorage
             saveSelectedIhd();
+            await updatePartOnServer('internal_hard_drive', null);
 
             // Show notification
             showNotification(`${ihdName} removed from your build!`);

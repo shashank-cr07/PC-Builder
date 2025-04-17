@@ -510,6 +510,45 @@
         let currentSelectedFan = null;
         let selectedFan = null;
 
+        let currentPcId = localStorage.getItem('pcId');
+
+        async function updatePartOnServer(partType, partId) {
+                try {
+                    const url = currentPcId
+                        ? `/api/score/add-part?pcId=`+currentPcId
+                        : `/api/score/add-part`;
+                    console.log(url);
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            partType: partType,
+                            partId: partId
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const result = await response.json();
+                    
+                    if (result.success && result.pcId) {
+                        console.log(result.pcId);
+                        currentPcId = result.pcId;
+                        localStorage.setItem('pcId', currentPcId);
+                    }
+                    
+                    return result;
+                } catch (error) {
+                    console.error('Error updating part:', error);
+                    showNotification('Failed to sync with server');
+                    return { success: false, message: 'Network error' };
+                }
+            }
+
         // Load saved selection from localStorage
         function loadSelectedFan() {
             const savedFan = localStorage.getItem('selectedFan');
@@ -532,7 +571,7 @@
         }
 
         // Save selection to localStorage
-        function saveSelectedFan() {
+        async function saveSelectedFan() {
             if (selectedFan) {
                 localStorage.setItem('selectedFan', JSON.stringify({
                     id: selectedFan.id,
@@ -542,6 +581,7 @@
                     rpm: selectedFan.rpm
                     // Include other minimal necessary properties
                 }));
+                await updatePartOnServer('case_fan', selectedFan.id);
             } else {
                 localStorage.removeItem('selectedFan');
             }
@@ -681,7 +721,7 @@
         }
 
         // Remove the selected fan
-        function removeSelectedFan() {
+        async function removeSelectedFan() {
             if (!selectedFan) return;
             
             const fanName = selectedFan.name;
@@ -702,6 +742,8 @@
             // Clear from localStorage
             saveSelectedFan();
             
+            await updatePartOnServer('case_fan', null);
+
             // Show notification
             showNotification(`${fanName} removed from your build!`);
         }

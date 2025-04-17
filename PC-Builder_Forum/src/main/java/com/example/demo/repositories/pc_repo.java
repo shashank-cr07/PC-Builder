@@ -10,8 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface pc_repo extends JpaRepository<Pc, Long> {
-
-    @Query("SELECT p FROM Pc p WHERE p.User.id = :userId")
+public interface pc_repo extends JpaRepository<Pc,Long>{
+        @Query("SELECT p FROM Pc p WHERE p.User.id = :userId")
     List<Pc> findAllByUserId(@Param("userId") int userId);
 }

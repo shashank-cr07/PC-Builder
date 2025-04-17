@@ -411,6 +411,44 @@
         const pageSize = 15;
         let currentSelectedMemory = null;
         let selectedMemory = null;
+        let currentPcId = localStorage.getItem('pcId');
+
+async function updatePartOnServer(partType, partId) {
+        try {
+            const url = currentPcId
+                ? `/api/score/add-part?pcId=`+currentPcId
+                : `/api/score/add-part`;
+            console.log(url);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    partType: partType,
+                    partId: partId
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.pcId) {
+                console.log(result.pcId);
+                currentPcId = result.pcId;
+                localStorage.setItem('pcId', currentPcId);
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Error updating part:', error);
+            showNotification('Failed to sync with server');
+            return { success: false, message: 'Network error' };
+        }
+    }
 
         // Back to Main Menu functionality
         document.getElementById('backToMainMenu').addEventListener('click', function() {
@@ -439,7 +477,7 @@
         }
 
         // Save selection to localStorage
-        function saveSelectedMemory() {
+        async function saveSelectedMemory() {
             if (selectedMemory) {
                 localStorage.setItem('selectedMemory', JSON.stringify({
                     id: selectedMemory.id,
@@ -448,6 +486,8 @@
                     speed: selectedMemory.speed,
                     modules: selectedMemory.modules
                 }));
+                await updatePartOnServer('memory', selectedMemory.id);
+
             } else {
                 localStorage.removeItem('selectedMemory');
             }
@@ -587,7 +627,7 @@
         }
 
         // Remove the selected memory
-        function removeSelectedMemory() {
+        async function removeSelectedMemory() {
             if (!selectedMemory) return;
             
             const memoryName = selectedMemory.name;
@@ -607,7 +647,8 @@
             
             // Clear from localStorage
             saveSelectedMemory();
-            
+            await updatePartOnServer('memory', null);
+
             // Show notification
             showNotification("${memoryName} removed from your build!");
         }

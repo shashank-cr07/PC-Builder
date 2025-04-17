@@ -418,6 +418,50 @@
         const pageSize = 15;
         let currentSelectedTp = null;
         let selectedTp = null;
+        let currentPcId = localStorage.getItem('pcId');
+
+
+
+
+
+async function updatePartOnServer(partType, partId) {
+        try {
+            const url = currentPcId
+                ? `/api/score/add-part?pcId=`+currentPcId
+                : `/api/score/add-part`;
+            console.log(url);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    partType: partType,
+                    partId: partId
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.pcId) {
+                console.log(result.pcId);
+                currentPcId = result.pcId;
+                localStorage.setItem('pcId', currentPcId);
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Error updating part:', error);
+            showNotification('Failed to sync with server');
+            return { success: false, message: 'Network error' };
+        }
+    }
+
+
 
         // Back to Main Menu functionality
         document.getElementById('backToMainMenu').addEventListener('click', function() {
@@ -446,7 +490,7 @@
         }
 
         // Save selection to localStorage
-        function saveSelectedTp() {
+        async function saveSelectedTp() {
             if (selectedTp) {
                 localStorage.setItem('selectedTp', JSON.stringify({
                     id: selectedTp.id,
@@ -454,6 +498,8 @@
                     price: selectedTp.price,
                     amount: selectedTp.amount
                 }));
+                await updatePartOnServer('thermal_paste', selectedTp.id);
+
             } else {
                 localStorage.removeItem('selectedTp');
             }
@@ -590,7 +636,7 @@
         }
 
         // Remove the selected thermal paste
-        function removeSelectedTp() {
+        async function removeSelectedTp() {
             if (!selectedTp) return;
             
             const tpName = selectedTp.name;
@@ -611,6 +657,7 @@
             // Clear from localStorage
             saveSelectedTp();
             
+            await updatePartOnServer('thermal_paste',null);
             // Show notification
             showNotification("${tpName} removed from your build!");
         }

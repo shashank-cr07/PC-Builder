@@ -494,6 +494,48 @@
         const pageSize = 15;
         let currentSelectedCase = null;
         let selectedCase = null;
+        
+        let currentPcId = localStorage.getItem('pcId');
+
+async function updatePartOnServer(partType, partId) {
+        try {
+            const url = currentPcId
+                ? `/api/score/add-part?pcId=`+currentPcId
+                : `/api/score/add-part`;
+            console.log(url);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    partType: partType,
+                    partId: partId
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.pcId) {
+                console.log(result.pcId);
+                currentPcId = result.pcId;
+                localStorage.setItem('pcId', currentPcId);
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Error updating part:', error);
+            showNotification('Failed to sync with server');
+            return { success: false, message: 'Network error' };
+        }
+    }
+
+
+
 
         // Back to Main Menu functionality
         document.getElementById('backToMainMenu').addEventListener('click', function() {
@@ -522,7 +564,7 @@
         }
 
         // Save selection to localStorage
-        function saveSelectedCase() {
+        async function saveSelectedCase() {
             if (selectedCase) {
                 localStorage.setItem('selectedCase', JSON.stringify({
                     id: selectedCase.id,
@@ -531,6 +573,7 @@
                     psu: selectedCase.psu,
                     // Include other minimal necessary properties
                 }));
+                await updatePartOnServer('case_table', selectedCase.id);
             } else {
                 localStorage.removeItem('selectedCase');
             }
@@ -669,7 +712,7 @@
         }
 
         // Remove the selected case
-        function removeSelectedCase() {
+        async function removeSelectedCase() {
             if (!selectedCase) return;
             
             const caseName = selectedCase.name;
@@ -689,7 +732,8 @@
             
             // Clear from localStorage
             saveSelectedCase();
-            
+            await updatePartOnServer('case_table', null);
+
             // Show notification
             showNotification(`${caseName} removed from your build!`);
         }

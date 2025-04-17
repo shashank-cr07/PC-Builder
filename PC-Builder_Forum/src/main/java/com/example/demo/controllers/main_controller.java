@@ -3,6 +3,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
+
 @Controller
 public class main_controller{
 	@GetMapping("/")
@@ -79,7 +80,13 @@ public class main_controller{
     @GetMapping("/logout-success")
     public String showlogoutpage() {
         return "logout"; 
+    }    
+    @GetMapping("/budget-planner")
+    public String buildpage(){
+        return "budget-planner"; 
     }
-
-
+    @GetMapping("/checkout")
+    public String checkpage(){
+        return "checkout"; 
+    }
 }

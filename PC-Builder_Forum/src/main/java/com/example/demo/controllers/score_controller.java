@@ -213,7 +213,7 @@ public class score_controller {
         return scoreService.calculatePerformanceScore(pc);
     }
 
-    @GetMapping("/reccomend")
+    @PostMapping("/reccomend")
     public Pc reccomend_PC(@RequestBody Map<String, Float> body) {
         float budget = body.get("budget");
 
@@ -491,7 +491,7 @@ public class score_controller {
                         builder.powerSupply(psuOpt.get());
                         break;
 
-                    case "case_table":
+                    case "case_table": 
                         Optional<case_table> caseOpt = caseTableRepo.findById(partId);
                         if (caseOpt.isEmpty()) {
                             return notFoundResponse("Case", partId);
@@ -579,4 +579,27 @@ public class score_controller {
         }
     }
 
+    @PostMapping("/add-name")
+    public ResponseEntity<String> addPcName(
+            @RequestParam("pcId") Long pcId,
+            @RequestBody Map<String, String> body) {
+
+        String partType = body.get("partType");
+        String partId = body.get("partId"); // This will be the name, like "monster build"
+
+        if (!"name".equalsIgnoreCase(partType)) {
+            return ResponseEntity.badRequest().body("Invalid partType. Expected 'name'");
+        }
+
+        Optional<Pc> pcOpt = pcRepo.findById(pcId);
+        if (pcOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("PC not found");
+        }
+
+        Pc pc = pcOpt.get();
+        pc.setName(partId);  // Assuming your Pc entity has a 'name' field
+        pcRepo.save(pc);
+
+        return ResponseEntity.ok("Name updated successfully");
+    }
 }

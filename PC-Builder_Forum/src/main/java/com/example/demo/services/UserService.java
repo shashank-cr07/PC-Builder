@@ -132,4 +132,34 @@ public class UserService {
     public List<Pc> getPcBuildsByUserId(int userId) {
         return pcRepository.findAllByUserId(userId);
     }
+    public Pc getCompletePcById(Integer pcId) {
+        Long id = (long)pcId;
+        Pc basePc = pcRepository.findById(id).orElseThrow(() -> new RuntimeException("PC not found"));
+
+        return new Pc.Builder()
+                .cpu(cpuRepository.findById(basePc.getCpu().getId()).orElse(null))
+                .motherboard(motherboardRepository.findById(basePc.getMotherboard().getId()).orElse(null))
+                .memory(memoryRepository.findById(basePc.getMemory().getId()).orElse(null))
+                .videoCard(videoCardRepository.findById(basePc.getVideoCard().getId()).orElse(null))
+                .powerSupply(powerSupplyRepository.findById(basePc.getPowerSupply().getId()).orElse(null))
+                .caseTable(caseTableRepository.findById(basePc.getCaseTable().getId()).orElse(null))
+                .cpuCooler(basePc.getCpuCooler() != null ? 
+                    cpuCoolerRepository.findById(basePc.getCpuCooler().getId()).orElse(null) : null)
+                .internalHardDrive(basePc.getInternalHardDrive() != null ? 
+                    internalHardDriveRepository.findById(basePc.getInternalHardDrive().getId()).orElse(null) : null)
+                .externalHardDrive(basePc.getExternalHardDrive() != null ? 
+                    externalHardDriveRepository.findById(basePc.getExternalHardDrive().getId()).orElse(null) : null)
+                .fanController(basePc.getFanController() != null ? 
+                    fanControllerRepository.findById(basePc.getFanController().getId()).orElse(null) : null)
+                .caseFan(basePc.getCaseFan() != null ? 
+                    caseFanRepository.findById(basePc.getCaseFan().getId()).orElse(null) : null)
+                .thermalPaste(basePc.getThermalPaste() != null ? 
+                    thermalPasteRepository.findById(basePc.getThermalPaste().getId()).orElse(null) : null)
+                .os(basePc.getOs() != null ? 
+                    osRepository.findById(basePc.getOs().getId()).orElse(null) : null)
+                .User(basePc.getUser())
+                .build();
+    }
+
+    
 }

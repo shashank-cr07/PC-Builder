@@ -434,6 +434,50 @@
         const pageSize = 15;
         let currentSelectedMb = null;
         let selectedMb = null;
+        let currentPcId = localStorage.getItem('pcId');
+
+
+
+
+
+async function updatePartOnServer(partType, partId) {
+        try {
+            const url = currentPcId
+                ? `/api/score/add-part?pcId=`+currentPcId
+                : `/api/score/add-part`;
+            console.log(url);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    partType: partType,
+                    partId: partId
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.pcId) {
+                console.log(result.pcId);
+                currentPcId = result.pcId;
+                localStorage.setItem('pcId', currentPcId);
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Error updating part:', error);
+            showNotification('Failed to sync with server');
+            return { success: false, message: 'Network error' };
+        }
+    }
+
+
 
         // Back to Main Menu functionality
         document.getElementById('backToMainMenu').addEventListener('click', function() {
@@ -462,7 +506,7 @@
         }
 
         // Save selection to localStorage
-        function saveSelectedMb() {
+        async function saveSelectedMb() {
             if (selectedMb) {
                 localStorage.setItem('selectedMb', JSON.stringify({
                     id: selectedMb.id,
@@ -470,6 +514,8 @@
                     price: selectedMb.price,
                     socket: selectedMb.socket
                 }));
+                await updatePartOnServer('motherboard', selectedMb.id);
+
             } else {
                 localStorage.removeItem('selectedMb');
             }
@@ -608,7 +654,7 @@
         }
 
         // Remove the selected motherboard
-        function removeSelectedMb() {
+        async function removeSelectedMb() {
             if (!selectedMb) return;
             
             const mbName = selectedMb.name;
@@ -628,7 +674,8 @@
             
             // Clear from localStorage
             saveSelectedMb();
-            
+            await updatePartOnServer('motherboard',null);
+
             // Show notification
             showNotification("${mbName} removed from your build!");
         }

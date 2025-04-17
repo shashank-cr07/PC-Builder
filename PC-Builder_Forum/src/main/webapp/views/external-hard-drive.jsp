@@ -438,7 +438,48 @@
         const pageSize = 15;
         let currentSelectedEhd = null;
         let selectedEhd = null;
+        let currentPcId = localStorage.getItem('pcId');
 
+
+
+
+
+async function updatePartOnServer(partType, partId) {
+        try {
+            const url = currentPcId
+                ? `/api/score/add-part?pcId=`+currentPcId
+                : `/api/score/add-part`;
+            console.log(url);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    partType: partType,
+                    partId: partId
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.pcId) {
+                console.log(result.pcId);
+                currentPcId = result.pcId;
+                localStorage.setItem('pcId', currentPcId);
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Error updating part:', error);
+            showNotification('Failed to sync with server');
+            return { success: false, message: 'Network error' };
+        }
+    }
         // Load saved selection from localStorage
         function loadSelectedEhd() {
             const savedEhd = localStorage.getItem('selectedEhd');
@@ -461,7 +502,7 @@
         }
 
         // Save selection to localStorage
-        function saveSelectedEhd() {
+        async function saveSelectedEhd() {
             if (selectedEhd) {
                 localStorage.setItem('selectedEhd', JSON.stringify({
                     id: selectedEhd.id,
@@ -470,6 +511,8 @@
                     capacity: selectedEhd.capacity
                     // Include other minimal necessary properties
                 }));
+                await updatePartOnServer('external_hard_drive', selectedEhd.id);
+
             } else {
                 localStorage.removeItem('selectedEhd');
             }
@@ -607,7 +650,7 @@
         }
 
         // Remove the selected EHD
-        function removeSelectedEhd() {
+        async function removeSelectedEhd() {
             if (!selectedEhd) return;
             
             const ehdName = selectedEhd.name;
@@ -627,7 +670,8 @@
             
             // Clear from localStorage
             saveSelectedEhd();
-            
+            await updatePartOnServer('cpu_cooler', null);
+
             // Show notification
             showNotification(`${ehdName} removed from your build!`);
         }

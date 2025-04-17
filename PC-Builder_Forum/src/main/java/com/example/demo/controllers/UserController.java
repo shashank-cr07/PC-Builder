@@ -7,6 +7,7 @@ import com.example.demo.bases.User;
 import com.example.demo.repositories.ForumRepository;
 import com.example.demo.repositories.UserRepository;
 
+
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class UserController {
     @Autowired
     private ForumRepository forumRepository;
 
+    
     // Required to initialize the session attribute
     @ModelAttribute("loggedInUser")
     public User loggedInUser() {
@@ -86,6 +88,5 @@ public class UserController {
     
         return "redirect:/logout-success"; // Go to a page that clears localStorage
     }
-    
     
 }

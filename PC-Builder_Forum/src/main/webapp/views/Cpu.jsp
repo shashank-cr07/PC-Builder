@@ -499,12 +499,49 @@
         const pageSize = 15;
         let currentSelectedCpu = null;
         let selectedCpu = null;
-
+        let currentPcId = localStorage.getItem('pcId');
+        
         // Back to Main Menu functionality
         document.getElementById('backToMainMenu').addEventListener('click', function() {
             window.location.href = '/home-pc';
         });
 
+        async function updatePartOnServer(partType, partId) {
+        try {
+            const url = currentPcId
+                ? `/api/score/add-part?pcId=`+currentPcId
+                : `/api/score/add-part`;
+            console.log(url);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    partType: partType,
+                    partId: partId
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.pcId) {
+                console.log(result.pcId);
+                currentPcId = result.pcId;
+                localStorage.setItem('pcId', currentPcId);
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Error updating part:', error);
+            showNotification('Failed to sync with server');
+            return { success: false, message: 'Network error' };
+        }
+    }
         // Load saved selection from localStorage
         function loadSelectedCpu() {
             const savedCpu = localStorage.getItem('selectedCpu');
@@ -527,7 +564,7 @@
         }
 
         // Save selection to localStorage
-        function saveSelectedCpu() {
+        async function saveSelectedCpu() {
             if (selectedCpu) {
                 localStorage.setItem('selectedCpu', JSON.stringify({
                     id: selectedCpu.id,
@@ -537,6 +574,8 @@
                     coreClock: selectedCpu.coreClock,
                     // Include other minimal necessary properties
                 }));
+                await updatePartOnServer('cpu', selectedCpu.id);
+
             } else {
                 localStorage.removeItem('selectedCpu');
             }
@@ -623,7 +662,7 @@
             
             tableBody.appendChild(row);
         }
-
+        
         // Handle row click with confirmation logic
         function handleRowClick(c) {
             currentSelectedCpu = c;
@@ -675,7 +714,7 @@
         }
 
         // Remove the selected CPU
-        function removeSelectedCpu() {
+        async function removeSelectedCpu() {
             if (!selectedCpu) return;
             
             const cpuName = selectedCpu.name;
@@ -696,6 +735,9 @@
             // Clear from localStorage
             saveSelectedCpu();
             
+            //remove
+            await updatePartOnServer('cpu', null);
+
             // Show notification
             showNotification(`${cpuName} removed from your build!`);
         }
