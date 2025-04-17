@@ -2,6 +2,9 @@ package com.example.demo.services;
 
 import com.example.demo.bases.*;
 import com.example.demo.repositories.*;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -125,5 +128,8 @@ public class UserService {
 
         pcRepository.save(pc);
         return "PC build saved successfully.";
+    }
+    public List<Pc> getPcBuildsByUserId(int userId) {
+        return pcRepository.findAllByUserId(userId);
     }
 }
