@@ -51,6 +51,10 @@ public class thermal_paste_controller {
             throw new RuntimeException("Thermal paste not found with id " + id);
         }
     }
+    @GetMapping("/name-search")
+    public List<thermal_paste> findName(@RequestParam String name) {
+        return repo.findByNameContainingIgnoreCase(name);
+    }
 
     @PostMapping("/add")
     public thermal_paste create(@RequestBody Map<String, String> body) {

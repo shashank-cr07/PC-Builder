@@ -1,8 +1,7 @@
 package com.example.demo.controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import jakarta.servlet.http.HttpSession;
+
 
 @Controller
 public class main_controller{
@@ -77,8 +76,10 @@ public class main_controller{
     public String showMemoryPage() {
         return "memory"; 
     }
-    @PostMapping("/clear-session")
-    public void clearSession(HttpSession session) {
-        session.removeAttribute("username"); // Removes the 'username' session attribute
+    @GetMapping("/logout-success")
+    public String showlogoutpage() {
+        return "logout"; 
     }
+
+
 }

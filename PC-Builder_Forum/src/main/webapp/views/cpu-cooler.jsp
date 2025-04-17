@@ -1,10 +1,12 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html>
 <head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-        
+
         /* Back to Main Menu Button */
         #backToMainMenu {
             position: fixed;
@@ -33,9 +35,19 @@
             position: relative;
         }
 
-        .CaseHeading {
+        .geometric-border {
+            padding: 20px 40px;
+            border: 4px solid #888;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05), 0 0 60px rgba(255, 255, 255, 0.02);
+            position: relative;
+            z-index: 1;
+        }
+
+        .CpuCoolerHeading {
             font-size: 3.5rem;
-            font-family: "Moonscape";
+            font-family: 'Inter', sans-serif; /* Fallback since Moonscape isn't imported */
             background: linear-gradient(to right, #a09d9d, #424444);
             -webkit-text-fill-color: black;
             text-transform: uppercase;
@@ -54,38 +66,53 @@
 
         #mainContent {
             display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-            align-items: flex-start;
+            justify-content: center;
             padding: 30px 60px;
-            gap: 60px;
-            flex-wrap: wrap;
         }
 
-        #caseOutput {
-            flex: 1;
-            min-width: 280px;
-            max-width: 350px;
-            padding: 24px;
-            border-radius: 16px;
-            background-color: #1f1f1f;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            color: #e2e2e2;
+        #allCpuCoolerOutput {
+            min-width: 600px;
+            margin-top: 20px;
+            overflow-x: auto;
         }
 
-        #caseOutput p {
-            font-size: 15px;
-            margin: 12px 0;
-            line-height: 1.6;
+        #allCpuCooler {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: #141414;
+            color: #fff;
+            font-size: 14px;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-        #caseOutput strong {
-            color: #ffffff;
+        #allCpuCooler th,
+        #allCpuCooler td {
+            border: 1px solid #2c2c2c;
+            padding: 14px 18px;
+            text-align: center;
+        }
+
+        #allCpuCooler th {
+            background-color: #1e1e1e;
             font-weight: 600;
         }
 
-        #caseOutput span {
-            color: #aaa;
+        #allCpuCooler tbody tr {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #allCpuCooler tbody tr:nth-child(odd) {
+            background-color: #1a1a1a;
+        }
+
+        #allCpuCooler tbody tr:hover {
+            background-color: #292929;
+        }
+
+        #allCpuCooler tbody tr.selected {
+            background-color: #2a4a2a;
         }
 
         #searchBarContainer {
@@ -96,7 +123,7 @@
             flex-wrap: wrap;
         }
 
-        #caseIdInput {
+        #cpuCoolerNameInput {
             padding: 10px;
             font-size: 14px;
             border-radius: 8px;
@@ -123,61 +150,8 @@
             background-color: #555;
         }
 
-        #allCaseOutput {
-            flex: 2;
-            min-width: 600px;
-            margin-top: 20px;
-            overflow-x: auto;
-        }
-
-        #allCase {
-            border-collapse: collapse;
-            width: 100%;
-            background-color: #141414;
-            color: #fff;
-            font-size: 14px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        #allCase th,
-        #allCase td {
-            border: 1px solid #2c2c2c;
-            padding: 14px 18px;
-            text-align: center;
-        }
-
-        #allCase th {
-            background-color: #1e1e1e;
-            font-weight: 600;
-        }
-
-        #allCase tbody tr {
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        #allCase tbody tr:nth-child(odd) {
-            background-color: #1a1a1a;
-        }
-
-        #allCase tbody tr:hover {
-            background-color: #292929;
-        }
-
-        #allCase tbody tr.selected {
-            background-color: #2a4a2a;
-        }
-
-        #paginationContainer {
-            margin: 30px 60px;
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
         /* Modal Styles */
-        #caseDetails {
+        #cpuCoolerDetails {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -192,14 +166,14 @@
             display: none;
         }
 
-        #caseDetails h3 {
+        #cpuCoolerDetails h3 {
             margin-top: 0;
             color: #fff;
             border-bottom: 1px solid #444;
             padding-bottom: 10px;
         }
 
-        #caseDetails p {
+        #cpuCoolerDetails p {
             margin: 10px 0;
             color: #d1caca;
         }
@@ -224,6 +198,41 @@
             background-color: rgba(0, 0, 0, 0.7);
             z-index: 999;
             display: none;
+        }
+
+        #selectedCpuCoolerDisplay {
+            margin: 20px 60px;
+            padding: 20px;
+            background-color: #1f1f1f;
+            border-radius: 12px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #selectedCpuCoolerDisplay h3 {
+            margin-top: 0;
+            color: #4CAF50;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        #selectedCpuCoolerDisplay p {
+            margin: 8px 0;
+        }
+
+        #removeSelectedCpuCooler {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+
+        #removeSelectedCpuCooler:hover {
+            background-color: #d32f2f;
         }
 
         #addToBuildBtn {
@@ -268,56 +277,19 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
-        #selectedCaseDisplay {
-            margin: 20px 60px;
-            padding: 20px;
-            background-color: #1f1f1f;
-            border-radius: 12px;
-            display: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        #selectedCaseDisplay h3 {
-            margin-top: 0;
-            color: #4CAF50;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-        }
-
-        #selectedCaseDisplay p {
-            margin: 8px 0;
-        }
-
-        #removeSelectedCase {
-            background-color: #f44336;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background-color 0.3s;
-        }
-
-        #removeSelectedCase:hover {
-            background-color: #d32f2f;
-        }
-
         @media (max-width: 768px) {
             #backToMainMenu {
                 top: 10px;
                 left: 10px;
                 padding: 8px 16px;
             }
-            
+
             .heading-container {
                 margin-top: 60px;
             }
 
             #mainContent {
-                flex-direction: column;
                 padding: 20px;
-                gap: 30px;
             }
 
             #searchBarContainer,
@@ -326,67 +298,135 @@
                 justify-content: center;
             }
 
-            #allCaseOutput {
+            #allCpuCoolerOutput {
                 min-width: unset;
                 width: 100%;
             }
 
-            #caseDetails {
+            #cpuCoolerDetails {
                 width: 90%;
                 padding: 20px;
             }
 
-            .CaseHeading {
+            .CpuCoolerHeading {
                 font-size: 2.5rem;
             }
+        }
+        .user-dropdown {
+            position: fixed; /* already fixed — good */
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            background-color: #444;
+            padding: 6px 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+            color: white;
+            font-size: 0.95rem;
+            z-index: 1002;
+        }
+
+        .user-dropdown img.user-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 2px solid white;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: fixed; /* ← changed from absolute to fixed */
+            right: 10px; /* match user-dropdown's right */
+            top: 60px;   /* still appears just below the dropdown */
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.08);
+            min-width: 180px;
+            z-index: 1001;
+        }
+
+        .dropdown-content ul {
+            list-style: none;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .dropdown-content ul li {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #333;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .dropdown-content ul li:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content ul li a {
+            color: #eee;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content ul li:hover,
+        .dropdown-content ul li a:hover {
+            color: #fc3434;
+        }
+
+        .dropdown-content.show {
+            display: block;
         }
     </style>
 </head>
 <body>
-
     <!-- Back to Main Menu Button -->
     <button id="backToMainMenu">Back to Main Menu</button>
 
+    <!-- Heading -->
     <div class="heading-container">
-        <h2 class="CaseHeading">Case Information</h2>
+        <div class="geometric-border">
+            <h2 class="CpuCoolerHeading">CPU Cooler Information</h2>
+        </div>
     </div>
 
-    <!-- Selected Case Display -->
-    <div id="selectedCaseDisplay">
-        <h3>Your Selected Case</h3>
-        <p><strong>Name:</strong> <span id="selectedCaseName"></span></p>
-        <p><strong>Price:</strong> <span id="selectedCasePrice"></span></p>
-        <p><strong>PSU Included:</strong> <span id="selectedCasePsu"></span></p>
-        <button id="removeSelectedCase">Remove Selection</button>
+    <!-- Selected CPU Cooler Display -->
+    <div id="selectedCpuCoolerDisplay">
+        <h3>Your Selected CPU Cooler</h3>
+        <p><strong>Name:</strong> <span id="selectedCpuCoolerName"></span></p>
+        <p><strong>Price:</strong> <span id="selectedCpuCoolerPrice"></span></p>
+        <p><strong>Size:</strong> <span id="selectedCpuCoolerSize"></span></p>
+        <button id="removeSelectedCpuCooler">Remove Selection</button>
     </div>
 
     <!-- Input and Buttons -->
     <div id="searchBarContainer">
-        <input type="text" id="caseNameInput" placeholder="Search Cases" />
-        <button onclick="searchCase()">Search</button>
+        <input type="text" id="cpuCoolerNameInput" placeholder="Search CPU Coolers" />
+        <button onclick="searchCpuCooler()">Search</button>
         <button onclick="clearSearch()">Clear search</button>
     </div>
 
-    <!-- Output & Table Side-by-side -->
+    <!-- Table -->
     <div id="mainContent">
-        <!-- Case Table -->
-        <div id="allCaseOutput">
-            <table id="allCase">
+        <!-- CPU Cooler Table -->
+        <div id="allCpuCoolerOutput">
+            <table id="allCpuCooler">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
                         <th>Price</th>
-                        <th>PSU</th>
-                        <th>Side Panel</th>
-                        <th>External Volume</th>
-                        <th>Internal 35 Bays</th>
+                        <th>RPM</th>
+                        <th>Noise Level</th>
+                        <th>Size</th>
                         <th>Color</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Data will be appended here -->
-                </tbody>    
+                </tbody>
             </table>
         </div>
     </div>
@@ -397,17 +437,16 @@
         <button onclick="nextPage()">Next</button>
     </div>
 
-    <!-- Case Details Modal -->
+    <!-- CPU Cooler Details Modal -->
     <div id="overlay"></div>
-    <div id="caseDetails">
-        <button id="closeDetails">&times;</button>
+    <div id="cpuCoolerDetails">
+        <button id="closeDetails">x</button>
         <h3 id="detailsName"></h3>
         <p><strong>ID:</strong> <span id="detailsId"></span></p>
         <p><strong>Price:</strong> <span id="detailsPrice"></span></p>
-        <p><strong>PSU Included:</strong> <span id="detailsPsu"></span></p>
-        <p><strong>Side Panel:</strong> <span id="detailsSidePanel"></span></p>
-        <p><strong>External Volume:</strong> <span id="detailsExternalVolume"></span></p>
-        <p><strong>Internal 3.5" Bays:</strong> <span id="detailsInternal35Bays"></span></p>
+        <p><strong>RPM:</strong> <span id="detailsRpm"></span></p>
+        <p><strong>Noise Level:</strong> <span id="detailsNoiseLevel"></span></p>
+        <p><strong>Size:</strong> <span id="detailsSize"></span></p>
         <p><strong>Color:</strong> <span id="detailsColor"></span></p>
         <button id="addToBuildBtn">Add to Build</button>
     </div>
@@ -417,11 +456,11 @@
 
     <script>
         // Global variables
-        let allCaseData = [];
+        let allCpuCoolerData = [];
         let currentPage = 0;
         const pageSize = 15;
-        let currentSelectedCase = null;
-        let selectedCase = null;
+        let currentSelectedCpuCooler = null;
+        let selectedCpuCooler = null;
 
         // Back to Main Menu functionality
         document.getElementById('backToMainMenu').addEventListener('click', function() {
@@ -429,73 +468,81 @@
         });
 
         // Load saved selection from localStorage
-        function loadSelectedCase() {
-            const savedCase = localStorage.getItem('selectedCase');
-            if (savedCase) {
+        function loadSelectedCpuCooler() {
+            const savedCooler = localStorage.getItem('selectedCpuCooler');
+            if (savedCooler) {
                 try {
-                    selectedCase = JSON.parse(savedCase);
-                    updateSelectedCaseDisplay();
-                    // Find the complete case data from allCaseData
-                    if (selectedCase && allCaseData.length > 0) {
-                        const completeCase = allCaseData.find(c => c.id === selectedCase.id);
-                        if (completeCase) {
-                            selectedCase = completeCase;
+                    selectedCpuCooler = JSON.parse(savedCooler);
+                    updateSelectedCpuCoolerDisplay();
+                    if (selectedCpuCooler && allCpuCoolerData.length > 0) {
+                        const completeCooler = allCpuCoolerData.find(c => c.id === selectedCpuCooler.id);
+                        if (completeCooler) {
+                            selectedCpuCooler = completeCooler;
                         }
                     }
                 } catch (e) {
-                    console.error("Error parsing saved case:", e);
-                    localStorage.removeItem('selectedCase');
+                    console.error("Error parsing saved CPU cooler:", e);
+                    localStorage.removeItem('selectedCpuCooler');
                 }
             }
         }
 
         // Save selection to localStorage
-        function saveSelectedCase() {
-            if (selectedCase) {
-                localStorage.setItem('selectedCase', JSON.stringify({
-                    id: selectedCase.id,
-                    name: selectedCase.name,
-                    price: selectedCase.price,
-                    psu: selectedCase.psu,
-                    // Include other minimal necessary properties
+        function saveSelectedCpuCooler() {
+            if (selectedCpuCooler) {
+                localStorage.setItem('selectedCpuCooler', JSON.stringify({
+                    id: selectedCpuCooler.id,
+                    name: selectedCpuCooler.name,
+                    price: selectedCpuCooler.price,
+                    size: selectedCpuCooler.size
                 }));
             } else {
-                localStorage.removeItem('selectedCase');
+                localStorage.removeItem('selectedCpuCooler');
             }
         }
 
+        // Clear search
         function clearSearch() {
-            document.getElementById("caseNameInput").value = "";
-            fetchAllCases();
+            document.getElementById("cpuCoolerNameInput").value = "";
+            fetchAllCpuCoolers();
         }
 
-        // Fetch all Cases from the backend
-        function fetchAllCases() {
+        // Fetch all CPU Coolers from the backend
+        function fetchAllCpuCoolers() {
+            console.log("Fetching CPU coolers from /cpu-cooler");
             $.ajax({
-                url: '/case-table',
+                url: '/cpu-cooler',
                 method: 'GET',
-                success: function(caseList) {
-                    allCaseData = caseList;
+                success: function(coolerList) {
+                    console.log("Received CPU cooler data:", coolerList);
+                    if (!Array.isArray(coolerList) || coolerList.length === 0) {
+                        console.warn("No CPU cooler data received or data is not an array");
+                        alert("No CPU coolers found. The server returned an empty list.");
+                        return;
+                    }
+                    allCpuCoolerData = coolerList;
                     currentPage = 0;
-                    displayCasePage(currentPage);
+                    displayCpuCoolerPage(currentPage);
                     // After loading data, check if we have a saved selection
-                    loadSelectedCase();
+                    loadSelectedCpuCooler();
                     // Highlight the saved selection in the table if it exists
-                    if (selectedCase) {
-                        highlightSelectedCaseInTable();
+                    if (selectedCpuCooler) {
+                        highlightSelectedCpuCoolerInTable();
                     }
                 },
-                error: function() {
-                    alert('Failed to fetch cases.');
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error("Failed to fetch CPU coolers:", textStatus, errorThrown);
+                    console.error("Response:", jqXHR.responseText);
+                    alert(`Failed to fetch CPU coolers: ${textStatus}. Check the console for details.`);
                 }
             });
         }
 
-        // Highlight the selected case in the table
-        function highlightSelectedCaseInTable() {
-            const rows = document.querySelectorAll("#allCase tbody tr");
+        // Highlight the selected CPU cooler in the table
+        function highlightSelectedCpuCoolerInTable() {
+            const rows = document.querySelectorAll("#allCpuCooler tbody tr");
             rows.forEach(row => {
-                if (selectedCase && row.cells[0].textContent === selectedCase.id.toString()) {
+                if (selectedCpuCooler && row.cells[0].textContent === selectedCpuCooler.id.toString()) {
                     row.classList.add('selected');
                 } else {
                     row.classList.remove('selected');
@@ -504,196 +551,216 @@
         }
 
         // Display a page of data
-        function displayCasePage(page) {
-            const tableBody = document.querySelector("#allCase tbody");
+        function displayCpuCoolerPage(page) {
+            console.log(`Displaying page ${page} with pageSize ${pageSize}`);
+            const tableBody = document.querySelector("#allCpuCooler tbody");
+            if (!tableBody) {
+                console.error("Table body not found!");
+                alert("Error: Table body not found in the DOM.");
+                return;
+            }
             tableBody.innerHTML = "";
             const startIndex = page * pageSize;
             const endIndex = startIndex + pageSize;
-            const pageData = allCaseData.slice(startIndex, endIndex);
-            pageData.forEach(c => {
-                addCaseRow(c);
+            const pageData = allCpuCoolerData.slice(startIndex, endIndex);
+            console.log("Page data:", pageData);
+            if (pageData.length === 0 && allCpuCoolerData.length > 0) {
+                console.warn("No data for this page, but data exists");
+                tableBody.innerHTML = "<tr><td colspan='7'>No CPU coolers on this page</td></tr>";
+                return;
+            } else if (pageData.length === 0) {
+                tableBody.innerHTML = "<tr><td colspan='7'>No CPU coolers available</td></tr>";
+                return;
+            }
+            pageData.forEach(cooler => {
+                addCpuCoolerRow(cooler);
             });
-            
-            // Re-highlight selected case after rendering
-            if (selectedCase) {
-                highlightSelectedCaseInTable();
+            // Re-highlight selected CPU cooler after rendering
+            if (selectedCpuCooler) {
+                highlightSelectedCpuCoolerInTable();
             }
         }
 
         // Append a single row to the table
-        function addCaseRow(entry) {
-            const tableBody = document.querySelector("#allCase tbody");
+        function addCpuCoolerRow(entry) {
+            console.log("Adding row for CPU cooler:", entry);
+            const tableBody = document.querySelector("#allCpuCooler tbody");
             const row = document.createElement("tr");
-            
-            // Highlight if this is the selected case
-            if (selectedCase && selectedCase.id === entry.id) {
+
+            // Highlight if this is the selected cooler
+            if (selectedCpuCooler && selectedCpuCooler.id === entry.id) {
                 row.classList.add('selected');
             }
-            
-            row.innerHTML = "<td>" + entry.id + "</td>" +
-                            "<td>" + entry.name + "</td>" +
-                            "<td>" + (entry.price ? "$" + entry.price : "Out Of stock") + "</td>" +
-                            "<td>" + (entry.psu ? "Yes" : "No") + "</td>" +
-                            "<td>" + entry.sidePanel + "</td>" +
-                            "<td>" + entry.externalVolume + "</td>" +
-                            "<td>" + entry.internal35Bays + "</td>" +
-                            "<td>" + entry.color + "</td>";
-            
+
+            // Validate entry data
+            if (!entry || typeof entry !== 'object') {
+                console.error("Invalid CPU cooler entry:", entry);
+                return;
+            }
+
+            row.innerHTML = "<td>" + (entry.id || 'N/A') + "</td>" +
+                            "<td>" + (entry.name || 'Unknown') + "</td>" +
+                            "<td>" + (entry.price != null ? "$" + entry.price : "Out of stock") + "</td>" +
+                            "<td>" + (entry.rpm || 'N/A') + "</td>" +
+                            "<td>" + (entry.noiseLevel || 'N/A') + "</td>" +
+                            "<td>" + (entry.size || 'N/A') + "</td>" +
+                            "<td>" + (entry.color || 'N/A') + "</td>";
+
             row.addEventListener('click', function() {
                 handleRowClick(entry);
             });
-            
+
             tableBody.appendChild(row);
         }
 
         // Handle row click with confirmation logic
-        function handleRowClick(c) {
-            currentSelectedCase = c;
-            
-            if (selectedCase && selectedCase.id === c.id) {
-                // Clicked on already selected case - ask to deselect
-                if (confirm("Do you want to remove this case from your build?")) {
-                    removeSelectedCase();
+        function handleRowClick(cooler) {
+            currentSelectedCpuCooler = cooler;
+
+            if (selectedCpuCooler && selectedCpuCooler.id === cooler.id) {
+                // Clicked on already selected cooler - ask to deselect
+                if (confirm("Do you want to remove this CPU cooler from your build?")) {
+                    removeSelectedCpuCooler();
                 }
-            } else if (selectedCase) {
-                // Already have a selected case - ask to replace
-                if (confirm(`You already have ${selectedCase.name} selected. Replace it with ${c.name}?`)) {
-                    setSelectedCase(c);
+            } else if (selectedCpuCooler) {
+                // Already have a selected cooler - ask to replace
+                if (confirm(`You already have ${selectedCpuCooler.name} selected. Replace it with ${cooler.name}?`)) {
+                    setSelectedCpuCooler(cooler);
                 }
             } else {
-                // No case selected - just select this one
-                setSelectedCase(c);
+                // No cooler selected - just select this one
+                setSelectedCpuCooler(cooler);
             }
-            
+
             // Show details in modal
-            showCaseDetails(c);
+            showCpuCoolerDetails(cooler);
         }
 
-        // Set the selected case
-        function setSelectedCase(c) {
+        // Set the selected CPU cooler
+        function setSelectedCpuCooler(cooler) {
             // Remove previous selection highlight
-            if (selectedCase) {
-                const rows = document.querySelectorAll("#allCase tbody tr");
+            if (selectedCpuCooler) {
+                const rows = document.querySelectorAll("#allCpuCooler tbody tr");
                 rows.forEach(row => {
-                    if (row.cells[0].textContent === selectedCase.id.toString()) {
+                    if (row.cells[0].textContent === selectedCpuCooler.id.toString()) {
                         row.classList.remove('selected');
                     }
                 });
             }
-            
-            selectedCase = c;
-            
+
+            selectedCpuCooler = cooler;
+
             // Add new selection highlight
-            highlightSelectedCaseInTable();
-            
-            // Update the selected case display
-            updateSelectedCaseDisplay();
-            
+            highlightSelectedCpuCoolerInTable();
+
+            // Update the selected cooler display
+            updateSelectedCpuCoolerDisplay();
+
             // Save to localStorage
-            saveSelectedCase();
-            
+            saveSelectedCpuCooler();
+
             // Show notification
-            showNotification(`${c.name} added to your build!`);
+            showNotification(`${cooler.name} added to your build!`);
         }
 
-        // Remove the selected case
-        function removeSelectedCase() {
-            if (!selectedCase) return;
-            
-            const caseName = selectedCase.name;
-            
+        // Remove the selected CPU cooler
+        function removeSelectedCpuCooler() {
+            if (!selectedCpuCooler) return;
+
+            const coolerName = selectedCpuCooler.name;
+
             // Remove selection highlight
-            const rows = document.querySelectorAll("#allCase tbody tr");
+            const rows = document.querySelectorAll("#allCpuCooler tbody tr");
             rows.forEach(row => {
-                if (row.cells[0].textContent === selectedCase.id.toString()) {
+                if (row.cells[0].textContent === selectedCpuCooler.id.toString()) {
                     row.classList.remove('selected');
                 }
             });
-            
-            selectedCase = null;
-            
-            // Hide the selected case display
-            document.getElementById('selectedCaseDisplay').style.display = 'none';
-            
+
+            selectedCpuCooler = null;
+
+            // Hide the selected cooler display
+            document.getElementById('selectedCpuCoolerDisplay').style.display = 'none';
+
             // Clear from localStorage
-            saveSelectedCase();
-            
+            saveSelectedCpuCooler();
+
             // Show notification
-            showNotification(`${caseName} removed from your build!`);
+            showNotification(`${coolerName} removed from your build!`);
         }
 
-        // Update the selected case display panel
-        function updateSelectedCaseDisplay() {
-            if (selectedCase) {
-                document.getElementById('selectedCaseName').textContent = selectedCase.name;
-                document.getElementById('selectedCasePrice').textContent = selectedCase.price ? "$" + selectedCase.price : "Out Of stock";
-                document.getElementById('selectedCasePsu').textContent = selectedCase.psu ? "Yes" : "No";
-                document.getElementById('selectedCaseDisplay').style.display = 'block';
+        // Update the selected cooler display panel
+        function updateSelectedCpuCoolerDisplay() {
+            if (selectedCpuCooler) {
+                document.getElementById('selectedCpuCoolerName').textContent = selectedCpuCooler.name || 'Unknown';
+                document.getElementById('selectedCpuCoolerPrice').textContent = selectedCpuCooler.price != null ? "$" + selectedCpuCooler.price : "Out of stock";
+                document.getElementById('selectedCpuCoolerSize').textContent = selectedCpuCooler.size || 'N/A';
+                document.getElementById('selectedCpuCoolerDisplay').style.display = 'block';
             } else {
-                document.getElementById('selectedCaseDisplay').style.display = 'none';
+                document.getElementById('selectedCpuCoolerDisplay').style.display = 'none';
             }
         }
 
-        // Show case details in modal
-        function showCaseDetails(c) {
-            currentSelectedCase = c;
-            document.getElementById('detailsId').textContent = c.id;
-            document.getElementById('detailsName').textContent = c.name;
-            document.getElementById('detailsPrice').textContent = c.price ? "$" + c.price : "Out Of stock";
-            document.getElementById('detailsPsu').textContent = c.psu ? "Yes" : "No";
-            document.getElementById('detailsSidePanel').textContent = c.sidePanel;
-            document.getElementById('detailsExternalVolume').textContent = c.externalVolume;
-            document.getElementById('detailsInternal35Bays').textContent = c.internal35Bays;
-            document.getElementById('detailsColor').textContent = c.color;
-            
+        // Show cooler details in modal
+        function showCpuCoolerDetails(cooler) {
+            currentSelectedCpuCooler = cooler;
+            document.getElementById('detailsId').textContent = cooler.id || 'N/A';
+            document.getElementById('detailsName').textContent = cooler.name || 'Unknown';
+            document.getElementById('detailsPrice').textContent = cooler.price != null ? "$" + cooler.price : "Out of stock";
+            document.getElementById('detailsRpm').textContent = cooler.rpm || 'N/A';
+            document.getElementById('detailsNoiseLevel').textContent = cooler.noiseLevel || 'N/A';
+            document.getElementById('detailsSize').textContent = cooler.size || 'N/A';
+            document.getElementById('detailsColor').textContent = cooler.color || 'N/A';
+
             // Update Add to Build button text and color
             const addButton = document.getElementById('addToBuildBtn');
-            if (selectedCase && selectedCase.id === c.id) {
+            if (selectedCpuCooler && selectedCpuCooler.id === cooler.id) {
                 addButton.textContent = 'Remove from Build';
                 addButton.classList.add('remove');
             } else {
                 addButton.textContent = 'Add to Build';
                 addButton.classList.remove('remove');
             }
-            
+
             document.getElementById('overlay').style.display = 'block';
-            document.getElementById('caseDetails').style.display = 'block';
+            document.getElementById('cpuCoolerDetails').style.display = 'block';
         }
 
         // Add to Build button functionality
         document.getElementById('addToBuildBtn').addEventListener('click', function() {
-            if (!currentSelectedCase) return;
-            
-            if (selectedCase && selectedCase.id === currentSelectedCase.id) {
+            if (!currentSelectedCpuCooler) return;
+
+            if (selectedCpuCooler && selectedCpuCooler.id === currentSelectedCpuCooler.id) {
                 // Clicked remove
-                removeSelectedCase();
-            } else if (selectedCase) {
+                removeSelectedCpuCooler();
+            } else if (selectedCpuCooler) {
                 // Confirm replacement
-                if (confirm(`Replace ${selectedCase.name} with ${currentSelectedCase.name}?`)) {
-                    setSelectedCase(currentSelectedCase);
+                if (confirm(`Replace ${selectedCpuCooler.name} with ${currentSelectedCpuCooler.name}?`)) {
+                    setSelectedCpuCooler(currentSelectedCpuCooler);
                 }
             } else {
                 // Just add
-                setSelectedCase(currentSelectedCase);
+                setSelectedCpuCooler(currentSelectedCpuCooler);
             }
-            
+
             closeModal();
         });
 
-        // Remove Selected Case button functionality
-        document.getElementById('removeSelectedCase').addEventListener('click', function() {
-            if (selectedCase) {
-                if (confirm(`Remove ${selectedCase.name} from your build?`)) {
-                    removeSelectedCase();
+        // Remove Selected Cooler button functionality
+        document.getElementById('removeSelectedCpuCooler').addEventListener('click', function() {
+            if (selectedCpuCooler) {
+                if (confirm(`Remove ${selectedCpuCooler.name} from your build?`)) {
+                    removeSelectedCpuCooler();
                 }
             }
         });
 
+        // Show notification
         function showNotification(message) {
             const notification = document.getElementById('buildNotification');
             notification.textContent = message;
             notification.style.display = 'block';
-            
+
             // Hide after 3 seconds
             setTimeout(function() {
                 notification.style.display = 'none';
@@ -704,7 +771,7 @@
         document.getElementById('closeDetails').addEventListener('click', function() {
             closeModal();
         });
-        
+
         // Close modal when clicking on overlay
         document.getElementById('overlay').addEventListener('click', function() {
             closeModal();
@@ -712,14 +779,14 @@
 
         function closeModal() {
             document.getElementById('overlay').style.display = 'none';
-            document.getElementById('caseDetails').style.display = 'none';
+            document.getElementById('cpuCoolerDetails').style.display = 'none';
         }
 
         // Pagination functions
         function nextPage() {
-            if ((currentPage + 1) * pageSize < allCaseData.length) {
+            if ((currentPage + 1) * pageSize < allCpuCoolerData.length) {
                 currentPage++;
-                displayCasePage(currentPage);
+                displayCpuCoolerPage(currentPage);
             } else {
                 alert("No more data.");
             }
@@ -728,33 +795,94 @@
         function previousPage() {
             if (currentPage > 0) {
                 currentPage--;
-                displayCasePage(currentPage);
+                displayCpuCoolerPage(currentPage);
             } else {
                 alert("You are on the first page.");
             }
         }
 
-        function searchCase() {
-            const query = document.getElementById("caseNameInput").value.trim().toLowerCase();
+        // Search CPU Cooler
+        function searchCpuCooler() {
+            const query = document.getElementById("cpuCoolerNameInput").value.trim().toLowerCase();
+            console.log("Searching CPU coolers with query:", query);
 
             $.ajax({
-                url: '/case-table/name-search?name=' + query,
+                url: '/cpu-cooler/name-search?name=' + encodeURIComponent(query),
                 method: 'GET',
                 success: function(data) {
-                    allCaseData = data;
+                    console.log("Search results:", data);
+                    if (!Array.isArray(data) || data.length === 0) {
+                        console.warn("No search results found");
+                        alert("No CPU coolers found for search query.");
+                    }
+                    allCpuCoolerData = data;
                     currentPage = 0;
-                    displayCasePage(currentPage);
+                    displayCpuCoolerPage(currentPage);
                 },
-                error: function() {
-                    console.log("Error occurred while fetching search results.");
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error("Search failed:", textStatus, errorThrown);
+                    console.error("Response:", jqXHR.responseText);
+                    alert(`Search failed: ${textStatus}. Check the console for details.`);
                 }
             });
         }
 
-        // Load all cases on page load
+        // Load all coolers on page load
         $(document).ready(function() {
-            fetchAllCases();
+            console.log("Page loaded, fetching CPU coolers");
+            fetchAllCpuCoolers();
         });
     </script>
+    <!-- User Dropdown -->
+    <div class="user-dropdown" onclick="handleUserClick()">
+        <img src="/images/user-icon.jpg" alt="User Icon" class="user-icon">
+        <div>
+            <c:choose>
+                <c:when test="${not empty loggedInUser}">
+                    ${loggedInUser.username}
+                </c:when>
+                <c:otherwise>
+                    Signup to save build
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+    <br>
+    <div class="dropdown-content" id="dropdownMenu">
+        <ul>
+            <li><a href="/home">Go to Forums Page</a></li>
+            <li><a href="/builds">View Builds</a></li>
+            <li><a href="/home-pc" onclick="confirmLogout(event)">Logout</a></li>
+        </ul>
+    </div>
+
+    <script>
+        function handleUserClick() {
+            const isLoggedIn = '<c:out value="${not empty loggedInUser}"/>' === 'true';
+            if (isLoggedIn) {
+                document.getElementById('dropdownMenu').classList.toggle('show');
+            } else {
+                window.location.href = '/login';
+            }
+        }
+
+        function confirmLogout(event) {
+            event.preventDefault();
+            if (confirm('Are you sure you want to logout? Session will be lost if not saved')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        // Hide dropdown when clicking outside
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('dropdownMenu');
+            const userBox = document.querySelector('.user-dropdown');
+            if (!userBox.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+
+
 </body>
 </html>

@@ -35,7 +35,10 @@ public class motherboard_controller {
         }
         return false;
     }
-
+    @GetMapping("/name-search")
+    public List<motherboard> findNameCpu(@RequestParam String name) {
+        return repo.findByNameContainingIgnoreCase(name);
+    }
     @PutMapping("/update/{id}")
     public motherboard update(@PathVariable("id") Integer id, @RequestBody Map<String, String> body) {
         Optional<motherboard> optional = repo.findById(id);

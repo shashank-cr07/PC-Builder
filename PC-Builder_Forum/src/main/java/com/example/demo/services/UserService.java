@@ -56,6 +56,7 @@ public class UserService {
     public String savePcBuild_user(Pc pc) {
         // Fetch and set CPU
         pc.setName(pc.getName());
+        
         if (pc.getCpu() != null && pc.getCpu().getId() != null) {
             pc.setCpu(cpuRepository.findById(pc.getCpu().getId()).orElse(null));
         }

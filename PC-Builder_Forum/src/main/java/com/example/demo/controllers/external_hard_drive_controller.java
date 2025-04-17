@@ -36,6 +36,11 @@ public class external_hard_drive_controller {
         return false;
     }
 
+    @GetMapping("/name-search")
+    public List<external_hard_drive> findNameCpu(@RequestParam String name) {
+        return externalHardDriveRepo.findByNameContainingIgnoreCase(name);
+    }
+
     @PostMapping("/add")
     public external_hard_drive addDrive(@RequestBody Map<String, String> body) {
         try {

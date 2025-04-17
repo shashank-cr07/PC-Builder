@@ -7,6 +7,8 @@ import com.example.demo.bases.User;
 import com.example.demo.repositories.ForumRepository;
 import com.example.demo.repositories.UserRepository;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -78,8 +80,12 @@ public class UserController {
     }
 
     @GetMapping("/logout")
-    public String logout(SessionStatus status) {
-        status.setComplete(); // Clear session attributes managed by @SessionAttributes
-        return "redirect:/";
+    public String logout(SessionStatus status, HttpSession session) {
+        status.setComplete();
+        session.invalidate(); // Destroy session
+    
+        return "redirect:/logout-success"; // Go to a page that clears localStorage
     }
+    
+    
 }

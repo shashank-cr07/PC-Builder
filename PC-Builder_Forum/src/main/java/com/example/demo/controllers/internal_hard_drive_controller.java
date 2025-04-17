@@ -56,6 +56,10 @@ public class internal_hard_drive_controller {
             throw new RuntimeException("Internal Hard Drive not found with id " + id);
         }
     }
+    @GetMapping("/name-search")
+    public List<internal_hard_drive> findNameCpu(@RequestParam String name) {
+        return repo.findByNameContainingIgnoreCase(name);
+    }
 
     @PostMapping("/add")
     public internal_hard_drive create(@RequestBody Map<String, String> body) {

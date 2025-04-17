@@ -35,6 +35,10 @@ public class memory_controller {
         }
         return false;
     }
+    @GetMapping("/name-search")
+    public List<memory> findNameCpu(@RequestParam String name) {
+        return repo.findByNameContainingIgnoreCase(name);
+    }
 
     @PutMapping("/update/{id}")
     public memory update(@PathVariable("id") Integer id, @RequestBody Map<String, String> body) {

@@ -37,6 +37,11 @@ public class cpu_cooler_controller {
         return false;
     }
 
+    @GetMapping("/name-search")
+    public List<cpu_cooler> findNameCpu(@RequestParam String name) {
+        return cpuCoolerRepo.findByNameContainingIgnoreCase(name);
+    }
+
     @PostMapping("/add")
     public cpu_cooler addCooler(@RequestBody Map<String, String> body) {
         try {

@@ -1,3 +1,6 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -350,6 +353,75 @@
                 font-size: 2.5rem;
             }
         }
+        .user-dropdown {
+            position: fixed; /* already fixed — good */
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            background-color: #444;
+            padding: 6px 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+            color: white;
+            font-size: 0.95rem;
+            z-index: 1002;
+        }
+
+        .user-dropdown img.user-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 2px solid white;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: fixed; /* ← changed from absolute to fixed */
+            right: 10px; /* match user-dropdown's right */
+            top: 60px;   /* still appears just below the dropdown */
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.08);
+            min-width: 180px;
+            z-index: 1001;
+        }
+
+        .dropdown-content ul {
+            list-style: none;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .dropdown-content ul li {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #333;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .dropdown-content ul li:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content ul li a {
+            color: #eee;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content ul li:hover,
+        .dropdown-content ul li a:hover {
+            color: #fc3434;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+
     </style>
 </head>
 <body>
@@ -775,5 +847,55 @@
             fetchAllFans();
         });
     </script>
+    <!-- User Dropdown -->
+    <div class="user-dropdown" onclick="handleUserClick()">
+        <img src="/images/user-icon.jpg" alt="User Icon" class="user-icon">
+        <div>
+            <c:choose>
+                <c:when test="${not empty loggedInUser}">
+                    ${loggedInUser.username}
+                </c:when>
+                <c:otherwise>
+                    Signup to save build
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+    <br>
+    <div class="dropdown-content" id="dropdownMenu">
+        <ul>
+            <li><a href="/home">Go to Forums Page</a></li>
+            <li><a href="/builds">View Builds</a></li>
+            <li><a href="/home-pc" onclick="confirmLogout(event)">Logout</a></li>
+        </ul>
+    </div>
+
+    <script>
+        function handleUserClick() {
+            const isLoggedIn = '<c:out value="${not empty loggedInUser}"/>' === 'true';
+            if (isLoggedIn) {
+                document.getElementById('dropdownMenu').classList.toggle('show');
+            } else {
+                window.location.href = '/login';
+            }
+        }
+
+        function confirmLogout(event) {
+            event.preventDefault();
+            if (confirm('Are you sure you want to logout? Session will be lost if not saved')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        // Hide dropdown when clicking outside
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('dropdownMenu');
+            const userBox = document.querySelector('.user-dropdown');
+            if (!userBox.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+
 </body>
 </html>

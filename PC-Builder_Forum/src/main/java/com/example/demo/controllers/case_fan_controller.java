@@ -40,6 +40,11 @@ public class case_fan_controller {
         return false;
     }
 
+    @GetMapping("/name-search")
+    public List<case_fan> findNameCaseFan(@RequestParam String name) {
+        return caseFanRepo.findByNameContainingIgnoreCase(name);
+    }
+
     // Update an existing case fan
     @PutMapping("/update/{id}")
     public case_fan updateCaseFan(@PathVariable("id") Integer id, @RequestBody Map<String, String> body) {

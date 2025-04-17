@@ -35,6 +35,10 @@ public class video_card_controller {
         }
         return false;
     }
+    @GetMapping("/name-search")
+    public List<video_card> findName(@RequestParam String name) {
+        return repo.findByNameContainingIgnoreCase(name);
+    }
 
     @PutMapping("/update/{id}")
     public video_card update(@PathVariable("id") Integer id, @RequestBody Map<String, String> body) {

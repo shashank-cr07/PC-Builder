@@ -55,6 +55,10 @@ public class power_supply_controller {
             throw new RuntimeException("Power supply not found with id " + id);
         }
     }
+    @GetMapping("/name-search")
+    public List<power_supply> findNameCpu(@RequestParam String name) {
+        return repo.findByNameContainingIgnoreCase(name);
+    }
 
     @PostMapping("/add")
     public power_supply create(@RequestBody Map<String, String> body) {

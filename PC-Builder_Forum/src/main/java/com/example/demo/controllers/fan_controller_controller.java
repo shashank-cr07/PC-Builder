@@ -35,6 +35,11 @@ public class fan_controller_controller {
         }
         return false;
     }
+    
+    @GetMapping("/name-search")
+    public List<fan_controller> findNameCpu(@RequestParam String name) {
+        return repo.findByNameContainingIgnoreCase(name);
+    }
 
     @PutMapping("/update/{id}")
     public fan_controller update(@PathVariable("id") Integer id, @RequestBody Map<String, String> body) {

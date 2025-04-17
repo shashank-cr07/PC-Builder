@@ -37,6 +37,11 @@ public class case_table_controller {
         return false;
     }
 
+    @GetMapping("/name-search")
+    public List<case_table> findNameCpu(@RequestParam String name) {
+        return caseTableRepo.findByNameContainingIgnoreCase(name);
+    }
+
     @PutMapping("/update/{id}")
     public case_table updateCase(@PathVariable("id") Integer id, @RequestBody Map<String, String> body) {
         Optional<case_table> caseOpt = caseTableRepo.findById(id);

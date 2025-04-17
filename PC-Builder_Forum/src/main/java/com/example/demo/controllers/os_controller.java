@@ -52,6 +52,10 @@ public class os_controller {
             throw new RuntimeException("OS not found with id " + id);
         }
     }
+    @GetMapping("/name-search")
+    public List<os> findName(@RequestParam String name) {
+        return repo.findByNameContainingIgnoreCase(name);
+    }
 
     @PostMapping("/add")
     public os create(@RequestBody Map<String, String> body) {
